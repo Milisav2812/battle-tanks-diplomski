@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "BasePawn.generated.h"
 
+class UCapsuleComponent;
+
 UCLASS()
 class BATTLETANKS_API ABasePawn : public APawn
 {
@@ -26,5 +28,16 @@ public:
 	// Called to bind functionality to input
 	// This is a method specific to the Pawn
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+private:
+	UPROPERTY()
+	UCapsuleComponent* CapsuleComp;
+	UPROPERTY()
+	UStaticMeshComponent* BaseMesh;
+	UPROPERTY()
+	UStaticMeshComponent* TurretMesh;
+	UPROPERTY()
+	USceneComponent* ProjectileSpawnPoint;
 
 };
