@@ -28,17 +28,16 @@ ABasePawn::ABasePawn()
 	
 }
 
-// Called when the game starts or when spawned
-void ABasePawn::BeginPlay()
+void ABasePawn::RotateTurret(FVector LookAtLocation) 
 {
-	Super::BeginPlay();
-	
-}
 
-// Called every frame
-void ABasePawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	// Vector that has a starting position in the tank turret and an end position at our mouse cursor
+	FVector TargetVector = LookAtLocation - TurretMesh->GetComponentLocation();
+
+	// Turret will only rotate in Yaw 
+	FRotator TargetRotation = FRotator(0, TargetVector.Rotation().Yaw, 0);
+
+	TurretMesh->SetWorldRotation(TargetRotation);
 
 }
 
