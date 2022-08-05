@@ -5,6 +5,7 @@
 #include "Tank.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 // Called when the game starts or when spawned
 void ATower::BeginPlay()
@@ -13,6 +14,15 @@ void ATower::BeginPlay()
 
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
+	// Setting the Timer
+	GetWorldTimerManager().SetTimer(
+		FireTimerHandle, 
+		this,								// The object for which this timer is called
+		&ATower::CheckIfFireConditionIsMet, 
+		FireRate, 
+		true								// Do we want the timer to loop?
+	);
+
 }
 
 // Called every frame
@@ -20,20 +30,39 @@ void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerTank) 
+	// Rotating the Tower Turret
+	if (CheckIfWithinRange())
+	{
+		RotateTurret(PlayerTank->GetActorLocation());
+	}
+
+}
+
+void ATower::CheckIfFireConditionIsMet()
+{
+	if (CheckIfWithinRange())
+	{
+		Fire();
+	}
+}
+
+float ATower::CheckIfWithinRange()
+{
+	if (PlayerTank)
 	{
 		FVector PlayerLocation = PlayerTank->GetActorLocation();
 		FVector TowerLocation = this->GetActorLocation();
-		
+
 		float Distance = FVector::Dist(TowerLocation, PlayerLocation);
-		
-		//UE_LOG(LogTemp, Warning, TEXT("Tower Location: %f, %f, %f"), TowerLocation.X, TowerLocation.Y, TowerLocation.Z)
-		//UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Distance)
 
 		if (Distance <= FireDistance)
 		{
-			RotateTurret(PlayerLocation);
+			return true;
 		}
+
+		//UE_LOG(LogTemp, Warning, TEXT("Tower Location: %f, %f, %f"), TowerLocation.X, TowerLocation.Y, TowerLocation.Z)
+		//UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Distance)
 	}
-	
+
+	return false;
 }

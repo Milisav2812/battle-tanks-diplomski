@@ -25,6 +25,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	float FireDistance = 1000;
 
+	float CheckIfWithinRange();
+
 	ATank* PlayerTank;
+
+	// Timer and Fire functionality
+	FTimerHandle FireTimerHandle;
+	UPROPERTY(EditAnywhere, Category = "Fire")
+	float FireRate = 2.f;
+	void CheckIfFireConditionIsMet();
 	
 };
