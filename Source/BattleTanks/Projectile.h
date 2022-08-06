@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+class UProjectileMovementComponent;
+
 UCLASS()
 class BATTLETANKS_API AProjectile : public AActor
 {
@@ -26,6 +28,19 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 	UStaticMeshComponent* ProjectileMeshComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UFUNCTION()
+	void OnHit(
+		UPrimitiveComponent* HitComp,	// The component doing the hitting - Projectile Mesh
+		AActor* OtherActor,				// The Actor that got hit
+		UPrimitiveComponent* OtherComp,	// The component that was hit (belongs to OtherActor)
+		FVector NormalImpulse,			// The Physics engine will apply an impulse in response to the collision
+		const FHitResult& Hit			// More info about the Hit
+	);  
+
 
 
 };
