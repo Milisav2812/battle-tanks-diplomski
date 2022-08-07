@@ -3,6 +3,8 @@
 
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/DamageType.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -44,10 +46,34 @@ void AProjectile::OnHit(
 	const FHitResult& Hit			
 )
 {
+	auto MyOwner = GetOwner();
+	if (MyOwner == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Projectile Owner is NULL"))
+		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("HitComp Name: %s"), *HitComp->GetName())
-	UE_LOG(LogTemp, Warning, TEXT("OtherActor Name: %s"), *OtherActor->GetName())
-	UE_LOG(LogTemp, Warning, TEXT("OtherComp Name: %s"), *OtherComp->GetName())
+	}
+	AController* EventInstigator = MyOwner->GetInstigatorController();
 
+	// Getting UClass from UDamageType
+	static UClass* DamageTypeClass = UDamageType::StaticClass();
+
+	// Do not deal damage IF
+		// The Actor that was hit is NULL
+		// The Actor that was hit is the Actor that fired the projectile
+		// The Projectile hits itself
+	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
+	{
+		UGameplayStatics::ApplyDamage(
+			OtherActor,
+			Damage,
+			EventInstigator,
+			this,
+			DamageTypeClass 
+		);
+	}
+
+	// Destroy Projectile
+	this->Destroy();
 }
 
