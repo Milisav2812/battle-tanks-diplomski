@@ -3,6 +3,8 @@
 
 #include "HealthComponent.h"
 #include "GameFramework/Controller.h"
+#include "BattleTanksGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -24,6 +26,9 @@ void UHealthComponent::BeginPlay()
 
 	// Bind DamageTaken to the OnTakeAnyDamage of the Owner
 	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::DamageTaken);
+
+	// Declare the Game Mode
+	BattleTanksGameMode = Cast<ABattleTanksGameMode>(UGameplayStatics::GetGameMode(this));
 	
 }
 
@@ -49,10 +54,9 @@ void UHealthComponent::DamageTaken(
 	if (Damage > 0.f)
 	{
 		CurrentHealth -= Damage;
-		if (CurrentHealth <= 0.f && this->GetOwner())
+		if (CurrentHealth <= 0.f && BattleTanksGameMode)
 		{
-			// Destroy the Healt Component Owner (Tank, Turret)
-			this->GetOwner()->Destroy();
+			BattleTanksGameMode->ActorDied(DamagedActor);
 		}
 	}
 

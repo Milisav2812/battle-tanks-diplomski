@@ -7,6 +7,7 @@
 #include "HealthComponent.generated.h"
 
 class AController;
+class ABattleTanksGameMode;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANKS_API UHealthComponent : public UActorComponent
@@ -39,6 +40,8 @@ private:
 		AController* Instagator,		// The controller responsible for the damage
 		AActor* DamageCauser			// Actor causing the damage
 	);
+
+	ABattleTanksGameMode* BattleTanksGameMode;
 
 		
 };

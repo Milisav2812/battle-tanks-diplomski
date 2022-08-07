@@ -96,4 +96,19 @@ void ATank::Turn(float Value) {
 	AddActorLocalRotation(DeltaRotation, true);
 }
 
+void ATank::HandleDestruction()
+{
+	Super::HandleDestruction();
+
+	// Hide the tank 
+	SetActorHiddenInGame(true);
+	// Disable tick for tank
+	SetActorTickEnabled(false);
+}
+
+APlayerController* ATank::GetPlayerController()
+{
+	return PlayerController;
+}
+
 

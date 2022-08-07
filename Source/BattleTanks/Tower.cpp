@@ -66,3 +66,9 @@ float ATower::CheckIfWithinRange()
 
 	return false;
 }
+
+void ATower::HandleDestruction()
+{
+	Super::HandleDestruction();
+	Destroy();
+}
