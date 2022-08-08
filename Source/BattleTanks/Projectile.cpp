@@ -71,9 +71,11 @@ void AProjectile::OnHit(
 			this,
 			DamageTypeClass 
 		);
+
 	}
 
 	// Destroy Projectile
 	this->Destroy();
+
 }
 

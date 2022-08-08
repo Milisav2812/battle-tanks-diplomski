@@ -5,14 +5,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tank.h"
 #include "Tower.h"
+#include "BattleTanksPlayerController.h"
 
 // Called when the game starts or when spawned
 void ABattleTanksGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(this, 0));
-
+	
+	HandleStartGame();
+	
 }
 
 void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
@@ -23,17 +24,30 @@ void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
 		PlayerTank->HandleDestruction();
 
 		// Verify that the controller is not NULL
-		if (PlayerTank->GetPlayerController())
+		if (PlayerController)
 		{
-			PlayerTank->DisableInput(PlayerTank->GetPlayerController());
-
-			// Disable mouse cursor
-			PlayerTank->GetPlayerController()->bShowMouseCursor = false;
+			PlayerController->SetPlayerEnabledState(false);
 		}
 		
 	}
 	else if (ATower* DestroyedTower = Cast<ATower>(ActorThatDied)) // Try to cast to Tower
 	{
 		DestroyedTower->HandleDestruction();
+	}
+}
+
+void ABattleTanksGameMode::HandleStartGame()
+{
+	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(this, 0));
+	PlayerController = Cast<ABattleTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+
+	if (PlayerController)
+	{
+		PlayerController->SetPlayerEnabledState(false);
+
+		// Setting up a timer to countdown 3 seconds before player can move
+		FTimerHandle StartTimerHandle;
+		FTimerDelegate StartTimerDelegate = FTimerDelegate::CreateUObject(PlayerController, &ABattleTanksPlayerController::SetPlayerEnabledState, true);
+		GetWorldTimerManager().SetTimer(StartTimerHandle, StartTimerDelegate, TimeBeforeStart, false);
 	}
 }

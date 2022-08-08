@@ -7,6 +7,7 @@
 #include "BattleTanksGameMode.generated.h"
 
 class ATank;
+class ABattleTanksPlayerController;
 
 UCLASS()
 class BATTLETANKS_API ABattleTanksGameMode : public AGameModeBase
@@ -22,5 +23,11 @@ protected:
 
 private:
 	ATank* PlayerTank;
-	
+	ABattleTanksPlayerController* PlayerController;
+
+	UPROPERTY(EditAnywhere, Category = "Start Timer")
+	float TimeBeforeStart = 3.f;
+
+	void HandleStartGame();
+
 };
