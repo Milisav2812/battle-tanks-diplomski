@@ -41,6 +41,8 @@ void ABattleTanksGameMode::HandleStartGame()
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(this, 0));
 	PlayerController = Cast<ABattleTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 
+	StartGame();
+
 	if (PlayerController)
 	{
 		PlayerController->SetPlayerEnabledState(false);
