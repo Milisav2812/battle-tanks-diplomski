@@ -7,6 +7,8 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class UParticleSystem;
+class UParticleSystemComponent;
 
 UCLASS()
 class BATTLETANKS_API AProjectile : public AActor
@@ -35,6 +37,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY(VisibleAnywhere, Category = "Damage")
+	UParticleSystemComponent* SmokeTrailComponent;
+
 	UFUNCTION()
 	void OnHit(
 		UPrimitiveComponent* HitComp,	// The component doing the hitting - Projectile Mesh
@@ -44,6 +49,8 @@ private:
 		const FHitResult& Hit			// More info about the Hit
 	);  
 
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	UParticleSystem* HitParticles;
 
 
 };

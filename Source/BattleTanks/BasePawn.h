@@ -8,6 +8,7 @@
 
 class UCapsuleComponent;
 class AProjectile;
+class UParticleSystem;
 
 UCLASS()
 class BATTLETANKS_API ABasePawn : public APawn
@@ -38,5 +39,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Death")
+	UParticleSystem* DeathParticles;
 
 };

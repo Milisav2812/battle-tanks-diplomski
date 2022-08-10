@@ -24,6 +24,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartGame();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameOver(bool bGameWon);
+
 private:
 	ATank* PlayerTank;
 	ABattleTanksPlayerController* PlayerController;
@@ -32,5 +35,8 @@ private:
 	float TimeBeforeStart = 3.f;
 
 	void HandleStartGame();
+
+	int32 CalculateNumberOfTowers();
+	int32 TowersLeft = 0;
 
 };

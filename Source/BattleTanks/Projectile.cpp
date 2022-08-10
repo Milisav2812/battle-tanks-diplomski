@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -14,6 +15,9 @@ AProjectile::AProjectile()
 
 	ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile"));
 	RootComponent = ProjectileMeshComponent;
+
+	SmokeTrailComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Smoke Trail Component"));
+	SmokeTrailComponent->SetupAttachment(RootComponent);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component")); 
 	ProjectileMovementComponent->InitialSpeed = 1300.f;
@@ -28,6 +32,8 @@ void AProjectile::BeginPlay()
 
 	// Bind OnHit to the Delegate
 	ProjectileMeshComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+
+
 	
 }
 
@@ -50,8 +56,8 @@ void AProjectile::OnHit(
 	if (MyOwner == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Projectile Owner is NULL"))
+		Destroy();
 		return;
-
 	}
 	AController* EventInstigator = MyOwner->GetInstigatorController();
 
@@ -74,8 +80,18 @@ void AProjectile::OnHit(
 
 	}
 
+	if (HitParticles)
+	{
+		// Spawn Particle System
+		UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(),
+			HitParticles,
+			ProjectileMeshComponent->GetRelativeTransform()
+		);
+	}
+
 	// Destroy Projectile
-	this->Destroy();
+	Destroy();
 
 }
 

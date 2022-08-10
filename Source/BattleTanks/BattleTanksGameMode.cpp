@@ -11,7 +11,7 @@
 void ABattleTanksGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	HandleStartGame();
 	
 }
@@ -29,15 +29,25 @@ void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
 			PlayerController->SetPlayerEnabledState(false);
 		}
 		
+		// End the game
+		GameOver(false);
 	}
 	else if (ATower* DestroyedTower = Cast<ATower>(ActorThatDied)) // Try to cast to Tower
 	{
 		DestroyedTower->HandleDestruction();
+		TowersLeft--;
+		if (TowersLeft == 0)
+		{
+			GameOver(true);
+		}
 	}
 }
 
 void ABattleTanksGameMode::HandleStartGame()
 {
+	// Initialize number of towers
+	TowersLeft = CalculateNumberOfTowers();
+
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(this, 0));
 	PlayerController = Cast<ABattleTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 
@@ -52,4 +62,12 @@ void ABattleTanksGameMode::HandleStartGame()
 		FTimerDelegate StartTimerDelegate = FTimerDelegate::CreateUObject(PlayerController, &ABattleTanksPlayerController::SetPlayerEnabledState, true);
 		GetWorldTimerManager().SetTimer(StartTimerHandle, StartTimerDelegate, TimeBeforeStart, false);
 	}
+}
+
+int32 ABattleTanksGameMode::CalculateNumberOfTowers()
+{
+	TArray<AActor*> ArrayOfTowers;
+	UGameplayStatics::GetAllActorsOfClass(this, ATower::StaticClass(), ArrayOfTowers);
+
+	return ArrayOfTowers.Num();
 }
