@@ -6,6 +6,9 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+#include "Engine/World.h"
+
+#include "DrawDebugHelpers.h"
 
 // Called when the game starts or when spawned
 void ATower::BeginPlay()
@@ -30,6 +33,7 @@ void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 	// Rotating the Tower Turret
 	if (CheckIfWithinRange())
 	{
@@ -40,7 +44,27 @@ void ATower::Tick(float DeltaTime)
 
 void ATower::CheckIfFireConditionIsMet()
 {
-	if (CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
+	FHitResult HitResult;
+
+	FCollisionQueryParams TraceParams(
+		FName(TEXT("")),
+		false, // Use Complex or Simple Collision
+		GetOwner() // The Actor that the Ray-Cast will ignore
+	);
+
+	bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
+		HitResult,
+		GetProjectileSpawnPoint()->GetComponentLocation(),
+		GetProjectileSpawnPoint()->GetComponentLocation() + GetProjectileSpawnPoint()->GetComponentRotation().Vector() * FireDistance,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldDynamic),
+		TraceParams
+	);
+
+	/*if (HitResult.Actor != nullptr)	{
+		UE_LOG(LogTemp, Warning, TEXT("Tower %s HitResult Actor %s"), *GetName(), *HitResult.Actor->GetName())
+	}*/
+
+	if (HitResult.Actor == PlayerTank && CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
 	{
 		Fire();
 	}

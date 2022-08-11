@@ -48,4 +48,12 @@ private:
 	void Turn(float Value);
 	
 	APlayerController* PlayerController;
+
+	// Used to implement Delay to Fire
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float FireDelay = 1.f;
+	bool bCanFire = true;
+	FTimerHandle FireTimerHandle;
+	void ModifiedFireMechanic();
+	void SetCanFireToTrue();
 };

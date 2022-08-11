@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -70,7 +71,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	// Bind functionality to Turn Axis
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATank::Turn);
 
-	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATank::Fire);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATank::ModifiedFireMechanic);
 
 }
 
@@ -111,6 +112,32 @@ void ATank::HandleDestruction()
 APlayerController* ATank::GetPlayerController()
 {
 	return PlayerController;
+}
+
+void ATank::ModifiedFireMechanic()
+{
+
+	if (bCanFire)
+	{
+		Fire();
+		bCanFire = false;
+
+		// Setting the Timer
+		GetWorldTimerManager().SetTimer(
+			FireTimerHandle,
+			this,								// The object for which this timer is called
+			&ATank::SetCanFireToTrue,
+			FireDelay,
+			false								// Do we want the timer to loop?
+		);
+
+	}
+
+}
+
+void ATank::SetCanFireToTrue()
+{
+	bCanFire = true;
 }
 
 

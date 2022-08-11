@@ -114,5 +114,14 @@ void ABasePawn::HandleDestruction()
 	
 }
 
+USceneComponent* ABasePawn::GetProjectileSpawnPoint()
+{
+	return ProjectileSpawnPoint;
+}
+
+UStaticMeshComponent* ABasePawn::GetBaseMesh()
+{
+	return BaseMesh;
+}
 
 

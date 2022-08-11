@@ -23,6 +23,9 @@ public:
 
 	void HandleDestruction();
 
+	USceneComponent* GetProjectileSpawnPoint();
+	UStaticMeshComponent* GetBaseMesh();
+
 
 protected:
 	void RotateTurret(FVector LookAtLocation);
