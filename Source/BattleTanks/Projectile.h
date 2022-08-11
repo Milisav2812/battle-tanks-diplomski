@@ -9,6 +9,8 @@
 class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
+class USoundBase;
+class UCameraShakeBase;
 
 UCLASS()
 class BATTLETANKS_API AProjectile : public AActor
@@ -27,8 +29,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	USoundBase* GetLaunchSound();
+
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Damage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Combat")
 	float Damage = 20.f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
@@ -37,7 +41,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Damage")
+	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	UParticleSystemComponent* SmokeTrailComponent;
 
 	UFUNCTION()
@@ -49,8 +53,15 @@ private:
 		const FHitResult& Hit			// More info about the Hit
 	);  
 
-	UPROPERTY(EditAnywhere, Category = "Damage")
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	UParticleSystem* HitParticles;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	USoundBase* LaunchSound;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	USoundBase* HitSound;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> HitCameraShake;
 };

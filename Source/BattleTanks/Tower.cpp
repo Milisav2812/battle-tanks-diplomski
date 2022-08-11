@@ -40,7 +40,7 @@ void ATower::Tick(float DeltaTime)
 
 void ATower::CheckIfFireConditionIsMet()
 {
-	if (CheckIfWithinRange())
+	if (CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
 	{
 		Fire();
 	}

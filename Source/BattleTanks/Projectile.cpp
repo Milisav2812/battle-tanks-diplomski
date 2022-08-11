@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/DamageType.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Camera/CameraShakeBase.h"
+#include "GameFramework/PlayerController.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -23,6 +25,8 @@ AProjectile::AProjectile()
 	ProjectileMovementComponent->InitialSpeed = 1300.f;
 	ProjectileMovementComponent->MaxSpeed = 1300.f;
 
+	 
+
 }
 
 // Called when the game starts or when spawned
@@ -32,9 +36,6 @@ void AProjectile::BeginPlay()
 
 	// Bind OnHit to the Delegate
 	ProjectileMeshComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-
-
-	
 }
 
 // Called every frame
@@ -78,7 +79,29 @@ void AProjectile::OnHit(
 			DamageTypeClass 
 		);
 
+		// Play Sound
+		if (HitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				HitSound,
+				GetActorLocation()
+			);
+		}
+
+		// Shake the camera
+		if (HitCameraShake)
+		{
+			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+			if (PlayerController)
+			{
+				PlayerController->ClientStartCameraShake(HitCameraShake);
+			}
+		}
+
 	}
+
+	
 
 	if (HitParticles)
 	{
@@ -93,5 +116,10 @@ void AProjectile::OnHit(
 	// Destroy Projectile
 	Destroy();
 
+}
+
+USoundBase* AProjectile::GetLaunchSound()
+{
+	return LaunchSound;
 }
 

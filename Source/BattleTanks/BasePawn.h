@@ -9,6 +9,8 @@
 class UCapsuleComponent;
 class AProjectile;
 class UParticleSystem;
+class USoundBase;
+class UCameraShakeBase;
 
 UCLASS()
 class BATTLETANKS_API ABasePawn : public APawn
@@ -42,5 +44,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Death")
 	UParticleSystem* DeathParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Death")
+	USoundBase* DestroySound;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<UCameraShakeBase> PawnDeathCameraShake;
 
 };

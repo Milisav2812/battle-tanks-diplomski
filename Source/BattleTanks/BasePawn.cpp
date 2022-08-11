@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Camera/CameraShakeBase.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -54,6 +55,18 @@ void ABasePawn::Fire()
 
 	SpawnedProjectile->SetOwner(this);
 
+	if (SpawnedProjectile->GetLaunchSound())
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			SpawnedProjectile->GetLaunchSound(),
+			SpawnedProjectile->GetActorLocation()
+		);
+	}
+	
+
+
+
 	// Draw Debug Sphere
 	/*DrawDebugSphere(
 		GetWorld(),
@@ -80,6 +93,25 @@ void ABasePawn::HandleDestruction()
 			RootComponent->GetRelativeTransform()
 		);
 	}
+
+	if (PawnDeathCameraShake)
+	{
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		if (PlayerController)
+		{
+			PlayerController->ClientStartCameraShake(PawnDeathCameraShake);
+		}
+	}
+
+	if (DestroySound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			DestroySound,
+			GetActorLocation()
+		);
+	}
+	
 }
 
 
