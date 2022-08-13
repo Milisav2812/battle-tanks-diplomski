@@ -5,7 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tank.h"
 #include "Tower.h"
+#include "EnemyTank.h"
 #include "BattleTanksPlayerController.h"
+#include "EnemyCharacterTank.h"
 
 // Called when the game starts or when spawned
 void ABattleTanksGameMode::BeginPlay()
@@ -40,6 +42,10 @@ void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
 		{
 			GameOver(true);
 		}
+	}
+	else if (AEnemyCharacterTank* DestroyedEnemy = Cast<AEnemyCharacterTank>(ActorThatDied)) // Try to cast to Tower
+	{
+		DestroyedEnemy->HandleDestruction();
 	}
 }
 

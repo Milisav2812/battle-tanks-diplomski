@@ -49,7 +49,6 @@ void UHealthComponent::DamageTaken(
 	AActor* DamageCauser			
 )
 {
-	/*UE_LOG(LogTemp, Warning, TEXT("Actor %s took damage %f"), *GetOwner()->GetName(), Damage)*/
 
 	if (Damage > 0.f)
 	{
