@@ -37,6 +37,8 @@ private:
 	void HandleStartGame();
 
 	int32 CalculateNumberOfTowers();
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 TowersLeft = 0;
 
 };
