@@ -54,6 +54,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 		TSubclassOf<UCameraShakeBase> PawnDeathCameraShake;
 
+	// ID of the enemy tank
+	UPROPERTY(EditInstanceOnly, Category = "Patrol ID", meta = (AllowPrivateAccess = "true"), BlueprintReadOnly)
+	int32 EnemyTankID;
+
 	// Fire Distance 
 	UPROPERTY(EditAnywhere, Category = "Fire")
 	float FireDistance = 1000;
