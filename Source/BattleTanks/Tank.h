@@ -27,8 +27,6 @@ public:
 
 	APlayerController* GetPlayerController();
 
-	bool bIsPlayerAlive = true;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,6 +45,7 @@ private:
 	void MoveForward(float Value);
 	void Turn(float Value);
 	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	APlayerController* PlayerController;
 
 	// Used to implement Delay to Fire

@@ -62,7 +62,7 @@ void AEnemyTank::CheckIfFireConditionIsMet()
 		TraceParams
 	);
 
-	if (HitResult.Actor == PlayerTank && CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
+	if (HitResult.Actor == PlayerTank && CheckIfWithinRange())
 	{
 		Fire();
 	}

@@ -103,10 +103,8 @@ void ATank::HandleDestruction()
 
 	// Hide the tank 
 	SetActorHiddenInGame(true);
-	// Disable tick for tank
-	SetActorTickEnabled(false);
-
-	bIsPlayerAlive = false;
+	//// Disable tick for tank
+	// SetActorTickEnabled(false);
 }
 
 APlayerController* ATank::GetPlayerController()

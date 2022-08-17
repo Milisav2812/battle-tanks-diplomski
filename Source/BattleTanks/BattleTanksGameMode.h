@@ -17,6 +17,8 @@ class BATTLETANKS_API ABattleTanksGameMode : public AGameModeBase
 public:
 	void ActorDied(AActor* ActorThatDied);
 
+	ATank* getPlayerTank();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,11 +29,15 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void GameOver(bool bGameWon);
 
+	
+
 private:
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ATank* PlayerTank;
+
 	ABattleTanksPlayerController* PlayerController;
 
-	UPROPERTY(EditAnywhere, Category = "Start Timer")
+	UPROPERTY(EditAnywhere, Category = "Gameplay Options")
 	float TimeBeforeStart = 3.f;
 
 	void HandleStartGame();

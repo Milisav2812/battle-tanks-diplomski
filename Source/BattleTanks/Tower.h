@@ -7,6 +7,7 @@
 #include "Tower.generated.h"
 
 class ATank;
+class ABattleTanksGameMode;
 
 UCLASS()
 class BATTLETANKS_API ATower : public ABasePawn
@@ -30,6 +31,8 @@ private:
 	float CheckIfWithinRange();
 
 	ATank* PlayerTank;
+
+	ABattleTanksGameMode* GameMode;
 
 	// Timer and Fire functionality
 	FTimerHandle FireTimerHandle;

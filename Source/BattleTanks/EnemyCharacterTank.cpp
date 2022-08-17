@@ -72,6 +72,8 @@ void AEnemyCharacterTank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
 	// Rotating the Tower Turret
 	if (CheckIfWithinRange())
 	{
@@ -167,14 +169,8 @@ void AEnemyCharacterTank::CheckIfFireConditionIsMet()
 		TraceParams
 	);
 
-	if (HitResult.Actor != nullptr)
+	if (HitResult.Actor == PlayerTank && CheckIfWithinRange())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor: %s"), *HitResult.Actor->GetName())
-	}
-
-	if (HitResult.Actor == PlayerTank && CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Fire"))
 		Fire();
 	}
 }

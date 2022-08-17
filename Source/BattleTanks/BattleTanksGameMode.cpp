@@ -33,6 +33,7 @@ void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
 		
 		// End the game
 		GameOver(false);
+		
 	}
 	else if (ATower* DestroyedTower = Cast<ATower>(ActorThatDied)) // Try to cast to Tower
 	{
@@ -76,4 +77,9 @@ int32 ABattleTanksGameMode::CalculateNumberOfTowers()
 	UGameplayStatics::GetAllActorsOfClass(this, ATower::StaticClass(), ArrayOfTowers);
 
 	return ArrayOfTowers.Num();
+}
+
+ATank* ABattleTanksGameMode::getPlayerTank()
+{
+	return PlayerTank;
 }

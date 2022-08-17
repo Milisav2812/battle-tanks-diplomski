@@ -3,6 +3,7 @@
 
 #include "Tower.h"
 #include "Tank.h"
+#include "BattleTanksGameMode.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
@@ -16,6 +17,7 @@ void ATower::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	GameMode = Cast<ABattleTanksGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	// Setting the Timer
 	GetWorldTimerManager().SetTimer(
@@ -32,6 +34,9 @@ void ATower::BeginPlay()
 void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 
 	// Rotating the Tower Turret
@@ -60,11 +65,7 @@ void ATower::CheckIfFireConditionIsMet()
 		TraceParams
 	);
 
-	/*if (HitResult.Actor != nullptr)	{
-		UE_LOG(LogTemp, Warning, TEXT("Tower %s HitResult Actor %s"), *GetName(), *HitResult.Actor->GetName())
-	}*/
-
-	if (HitResult.Actor == PlayerTank && CheckIfWithinRange() && PlayerTank->bIsPlayerAlive)
+	if (HitResult.Actor == PlayerTank && CheckIfWithinRange())
 	{
 		Fire();
 	}
