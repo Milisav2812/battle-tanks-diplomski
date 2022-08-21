@@ -35,16 +35,14 @@ void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	// Done in Tick because of Player Respawn
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
-
 
 	// Rotating the Tower Turret
 	if (CheckIfWithinRange())
 	{
 		RotateTurret(PlayerTank->GetActorLocation());
 	}
-
 }
 
 void ATower::CheckIfFireConditionIsMet()
@@ -84,9 +82,6 @@ float ATower::CheckIfWithinRange()
 		{
 			return true;
 		}
-
-		//UE_LOG(LogTemp, Warning, TEXT("Tower Location: %f, %f, %f"), TowerLocation.X, TowerLocation.Y, TowerLocation.Z)
-		//UE_LOG(LogTemp, Warning, TEXT("Distance: %f"), Distance)
 	}
 
 	return false;

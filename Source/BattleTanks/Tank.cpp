@@ -13,13 +13,11 @@
 // Constructor
 ATank::ATank() 
 {
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(RootComponent);
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArm);
-
 }
 
 // Called when the game starts or when spawned
@@ -29,8 +27,6 @@ void ATank::BeginPlay()
 
 	// Get the Player Controller and store it
 	PlayerController = Cast<APlayerController>(GetController());
-
-
 }
 
 // Called every frame
@@ -38,24 +34,12 @@ void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerController) {
+	// Rotate Turret towards Hit Object
+	if (ensure(PlayerController)) {
 
 		FHitResult HitResult;
 		PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, false, HitResult);
-
-		//// Draw Debug Sphere
-		//DrawDebugSphere(
-		//	GetWorld(),
-		//	HitResult.ImpactPoint,
-		//	5,
-		//	12,
-		//	FColor::Red,
-		//	false,
-		//	-1
-		//);
-
 		ABasePawn::RotateTurret(HitResult.ImpactPoint);
-
 	}
 
 }
@@ -75,9 +59,8 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void ATank::MoveForward(float Value) {
-	//UE_LOG(LogTemp, Warning, TEXT("MoveForward Axis Value: %f"), Value)
-
+void ATank::MoveForward(float Value) 
+{
 	FVector DeltaLocation(0);
 
 	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
@@ -86,9 +69,8 @@ void ATank::MoveForward(float Value) {
 	AddActorLocalOffset(DeltaLocation, true);
 }
 
-void ATank::Turn(float Value) {
-	//UE_LOG(LogTemp, Warning, TEXT("MoveForward Axis Value: %f"), Value)
-
+void ATank::Turn(float Value) 
+{
 	FRotator DeltaRotation(0);
 
 	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
@@ -97,24 +79,9 @@ void ATank::Turn(float Value) {
 	AddActorLocalRotation(DeltaRotation, true);
 }
 
-void ATank::HandleDestruction()
-{
-	Super::HandleDestruction();
-
-	// Hide the tank 
-	SetActorHiddenInGame(true);
-	//// Disable tick for tank
-	// SetActorTickEnabled(false);
-}
-
-APlayerController* ATank::GetPlayerController()
-{
-	return PlayerController;
-}
-
 void ATank::ModifiedFireMechanic()
 {
-
+	// Fire & Set Timer for ReloadTime
 	if (bCanFire)
 	{
 		Fire();
@@ -125,17 +92,28 @@ void ATank::ModifiedFireMechanic()
 			FireTimerHandle,
 			this,								// The object for which this timer is called
 			&ATank::SetCanFireToTrue,
-			FireDelay,
+			ReloadTime,
 			false								// Do we want the timer to loop?
 		);
 
 	}
-
 }
 
 void ATank::SetCanFireToTrue()
 {
 	bCanFire = true;
 }
+
+void ATank::HandleDestruction()
+{
+	Super::HandleDestruction();
+}
+
+APlayerController* ATank::GetPlayerController()
+{
+	return PlayerController;
+}
+
+
 
 

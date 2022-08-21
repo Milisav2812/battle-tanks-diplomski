@@ -10,17 +10,15 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
-#include "DrawDebugHelpers.h"
 #include "Camera/CameraShakeBase.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
+#include "GameFramework/MovementComponent.h"
 
-// Sets default values
 AEnemyCharacterTank::AEnemyCharacterTank()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -28,29 +26,37 @@ void AEnemyCharacterTank::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Getting all UStaticMeshComponents and Initialization
 	auto Comps = GetComponentsByClass(UStaticMeshComponent::StaticClass());
-
 	for (auto Comp : Comps)
 	{
 		if (Comp->GetName() == "Base Mesh")
 		{
 			BaseMesh = Cast<UStaticMeshComponent>(Comp);
-			// UE_LOG(LogTemp, Warning, TEXT("Found %s"), *BaseMesh->GetName())
 		}
 		else if (Comp->GetName() == "Turret Mesh")
 		{
 			TurretMesh = Cast<UStaticMeshComponent>(Comp);
-			// UE_LOG(LogTemp, Warning, TEXT("Found %s"), *TurretMesh->GetName())
 		}
 	}
 
+	// Getting all USceneComponent and Initialization
 	auto SceneComps = GetComponentsByClass(USceneComponent::StaticClass());
 	for (auto SceneComp : SceneComps)
 	{
 		if (SceneComp->GetName() == "Projectile Spawn Point")
 		{
 			ProjectileSpawnPoint = Cast<USceneComponent>(SceneComp);
-			// UE_LOG(LogTemp, Warning, TEXT("Found %s"), *ProjectileSpawnPoint->GetName())
+		}
+	}
+
+	// Getting all UMovementComponent and Initialization
+	auto MoveComps = GetComponentsByClass(UMovementComponent::StaticClass());
+	for (auto MoveComp : MoveComps)
+	{
+		if (MoveComp->GetName() == "CharMoveComp")
+		{
+			MovementComponent = Cast<UMovementComponent>(MoveComp);
 		}
 	}
 
@@ -59,10 +65,10 @@ void AEnemyCharacterTank::BeginPlay()
 	// Setting the Timer
 	GetWorldTimerManager().SetTimer(
 		FireTimerHandle,
-		this,								// The object for which this timer is called
+		this,								
 		&AEnemyCharacterTank::CheckIfFireConditionIsMet,
 		FireRate,
-		true								// Do we want the timer to loop?
+		true								
 	);
 	
 }
@@ -74,17 +80,37 @@ void AEnemyCharacterTank::Tick(float DeltaTime)
 
 	PlayerTank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
-	// Rotating the Tower Turret
 	if (CheckIfWithinRange())
 	{
 		RotateTurret(PlayerTank->GetActorLocation());
 	}
 
+	if (MovementComponent->IsActive() == false)
+	{
+		MovementComponent->SetActive(true);
+	}
+}
+
+float AEnemyCharacterTank::CheckIfWithinRange()
+{
+	if (ensure(PlayerTank))
+	{
+		FVector PlayerLocation = PlayerTank->GetActorLocation();
+		FVector EnemyLocation = this->GetActorLocation();
+
+		float Distance = FVector::Dist(EnemyLocation, PlayerLocation);
+
+		if (Distance <= FireDistance)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void AEnemyCharacterTank::RotateTurret(FVector LookAtLocation)
 {
-	// Vector that has a starting position in the tank turret and an end position at our mouse cursor
 	FVector TargetVector = LookAtLocation - TurretMesh->GetComponentLocation();
 
 	// Turret will only rotate in Yaw 
@@ -93,9 +119,39 @@ void AEnemyCharacterTank::RotateTurret(FVector LookAtLocation)
 	TurretMesh->SetWorldRotation(TargetRotation);
 }
 
+void AEnemyCharacterTank::CheckIfFireConditionIsMet()
+{
+	FHitResult HitResult;
+
+	FCollisionQueryParams TraceParams(
+		FName(TEXT("")),
+		false, // Use Complex or Simple Collision
+		GetOwner() // The Actor that the Ray-Cast will ignore
+	);
+
+	// Creates an Imaginary line from the Projectile Spawn Point
+	GetWorld()->LineTraceSingleByObjectType(
+		HitResult,
+		ProjectileSpawnPoint->GetComponentLocation(),
+		ProjectileSpawnPoint->GetComponentLocation() + ProjectileSpawnPoint->GetComponentRotation().Vector() * FireDistance,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldDynamic),
+		TraceParams
+	);
+
+	if (HitResult.Actor == PlayerTank && CheckIfWithinRange())
+	{
+		// Disable movement if the player is in view - Stop Enemy Tank
+		if (ensure(MovementComponent) && MovementComponent->IsActive())
+		{
+			MovementComponent->SetActive(false);
+		}
+
+		Fire();
+	}
+}
+
 void AEnemyCharacterTank::Fire()
 {
-
 	AProjectile* SpawnedProjectile = GetWorld()->SpawnActor<AProjectile>(
 		ProjectileClass,
 		ProjectileSpawnPoint->GetComponentLocation(),
@@ -117,10 +173,7 @@ void AEnemyCharacterTank::Fire()
 
 void AEnemyCharacterTank::HandleDestruction()
 {
-	// Visual / Sound Effects go here
-
-	// Spawn Death Particles
-	if (DeathParticles)
+	if (ensure(DeathParticles))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
@@ -129,7 +182,7 @@ void AEnemyCharacterTank::HandleDestruction()
 		);
 	}
 
-	if (PawnDeathCameraShake)
+	if (ensure(PawnDeathCameraShake))
 	{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 		if (PlayerController)
@@ -138,7 +191,7 @@ void AEnemyCharacterTank::HandleDestruction()
 		}
 	}
 
-	if (DestroySound)
+	if (ensure(DestroySound))
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
@@ -148,48 +201,7 @@ void AEnemyCharacterTank::HandleDestruction()
 	}
 
 	Destroy();
-
 }
 
-void AEnemyCharacterTank::CheckIfFireConditionIsMet()
-{
-	FHitResult HitResult;
 
-	FCollisionQueryParams TraceParams(
-		FName(TEXT("")),
-		false, // Use Complex or Simple Collision
-		GetOwner() // The Actor that the Ray-Cast will ignore
-	);
-
-	bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
-		HitResult,
-		ProjectileSpawnPoint->GetComponentLocation(),
-		ProjectileSpawnPoint->GetComponentLocation() + ProjectileSpawnPoint->GetComponentRotation().Vector() * FireDistance,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldDynamic),
-		TraceParams
-	);
-
-	if (HitResult.Actor == PlayerTank && CheckIfWithinRange())
-	{
-		Fire();
-	}
-}
-
-float AEnemyCharacterTank::CheckIfWithinRange()
-{
-	if (PlayerTank)
-	{
-		FVector PlayerLocation = PlayerTank->GetActorLocation();
-		FVector EnemyLocation = this->GetActorLocation();
-
-		float Distance = FVector::Dist(EnemyLocation, PlayerLocation);
-
-		if (Distance <= FireDistance)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
 

@@ -22,11 +22,8 @@ AProjectile::AProjectile()
 	SmokeTrailComponent->SetupAttachment(RootComponent);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component")); 
-	ProjectileMovementComponent->InitialSpeed = 1300.f;
-	ProjectileMovementComponent->MaxSpeed = 1300.f;
-
-	 
-
+	ProjectileMovementComponent->InitialSpeed = 2000.f;
+	ProjectileMovementComponent->MaxSpeed = 2000.f;
 }
 
 // Called when the game starts or when spawned
@@ -54,7 +51,7 @@ void AProjectile::OnHit(
 )
 {
 	auto MyOwner = GetOwner();
-	if (MyOwner == nullptr)
+	if (!ensure(MyOwner))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Projectile Owner is NULL"))
 		Destroy();
@@ -69,8 +66,9 @@ void AProjectile::OnHit(
 		// The Actor that was hit is NULL
 		// The Actor that was hit is the Actor that fired the projectile
 		// The Projectile hits itself
-	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
+	if (ensure(OtherActor) && OtherActor != this && OtherActor != MyOwner)
 	{
+		// Will call HealthComponent DamageTaken function
 		UGameplayStatics::ApplyDamage(
 			OtherActor,
 			Damage,
@@ -80,7 +78,7 @@ void AProjectile::OnHit(
 		);
 
 		// Play Sound
-		if (HitSound)
+		if (ensure(HitSound))
 		{
 			UGameplayStatics::PlaySoundAtLocation(
 				this,
@@ -90,10 +88,10 @@ void AProjectile::OnHit(
 		}
 
 		// Shake the camera
-		if (HitCameraShake)
+		if (ensure(HitCameraShake))
 		{
 			APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-			if (PlayerController)
+			if (ensure(PlayerController))
 			{
 				PlayerController->ClientStartCameraShake(HitCameraShake);
 			}
@@ -101,11 +99,9 @@ void AProjectile::OnHit(
 
 	}
 
-	
-
-	if (HitParticles)
+	// Spawn Particle System
+	if (ensure(HitParticles))
 	{
-		// Spawn Particle System
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
 			HitParticles,
@@ -113,9 +109,7 @@ void AProjectile::OnHit(
 		);
 	}
 
-	// Destroy Projectile
 	Destroy();
-
 }
 
 USoundBase* AProjectile::GetLaunchSound()

@@ -6,6 +6,7 @@
 #include "BasePawn.h"
 #include "Tank.generated.h"
 
+// Forward Includes
 class UCameraComponent;
 class USpringArmComponent;
 
@@ -37,10 +38,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Camera Components")
 	USpringArmComponent* SpringArm;
 
+	// Movement & Rotation Speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Movement")
-	float Speed = 100;
+	float Speed = 400;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Movement")
-	float RotationSpeed = 100;
+	float RotationSpeed = 80;
 
 	void MoveForward(float Value);
 	void Turn(float Value);
@@ -50,7 +52,7 @@ private:
 
 	// Used to implement Delay to Fire
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	float FireDelay = 1.f;
+	float ReloadTime = 1.f;
 	bool bCanFire = true;
 	FTimerHandle FireTimerHandle;
 	void ModifiedFireMechanic();

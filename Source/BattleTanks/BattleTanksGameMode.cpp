@@ -2,52 +2,20 @@
 
 
 #include "BattleTanksGameMode.h"
-#include "Kismet/GameplayStatics.h"
+
 #include "Tank.h"
 #include "Tower.h"
 #include "EnemyTank.h"
 #include "BattleTanksPlayerController.h"
 #include "EnemyCharacterTank.h"
 
-// Called when the game starts or when spawned
+#include "Kismet/GameplayStatics.h"
+
 void ABattleTanksGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	HandleStartGame();
-	
-}
-
-void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
-{
-	// Check if the dead actor is the player tank
-	if (ActorThatDied == PlayerTank)
-	{
-		PlayerTank->HandleDestruction();
-
-		// Verify that the controller is not NULL
-		if (PlayerController)
-		{
-			PlayerController->SetPlayerEnabledState(false);
-		}
-		
-		// End the game
-		GameOver(false);
-		
-	}
-	else if (ATower* DestroyedTower = Cast<ATower>(ActorThatDied)) // Try to cast to Tower
-	{
-		DestroyedTower->HandleDestruction();
-		TowersLeft--;
-		if (TowersLeft == 0)
-		{
-			GameOver(true);
-		}
-	}
-	else if (AEnemyCharacterTank* DestroyedEnemy = Cast<AEnemyCharacterTank>(ActorThatDied)) // Try to cast to Tower
-	{
-		DestroyedEnemy->HandleDestruction();
-	}
 }
 
 void ABattleTanksGameMode::HandleStartGame()
@@ -60,7 +28,7 @@ void ABattleTanksGameMode::HandleStartGame()
 
 	StartGame();
 
-	if (PlayerController)
+	if (ensure(PlayerController))
 	{
 		PlayerController->SetPlayerEnabledState(false);
 
@@ -73,13 +41,42 @@ void ABattleTanksGameMode::HandleStartGame()
 
 int32 ABattleTanksGameMode::CalculateNumberOfTowers()
 {
+	// StaticClass returnes the UClass of the object
 	TArray<AActor*> ArrayOfTowers;
 	UGameplayStatics::GetAllActorsOfClass(this, ATower::StaticClass(), ArrayOfTowers);
 
 	return ArrayOfTowers.Num();
 }
 
-ATank* ABattleTanksGameMode::getPlayerTank()
+void ABattleTanksGameMode::ActorDied(AActor* ActorThatDied)
 {
-	return PlayerTank;
+	// Check if the dead actor is the player tank
+	if (ActorThatDied == PlayerTank)
+	{
+		PlayerTank->HandleDestruction();
+
+		// Verify that the controller is not NULL
+		if (ensure(PlayerController))
+		{
+			PlayerController->SetPlayerEnabledState(false);
+		}
+		
+		// Call End Game Blueprint Event
+		GameOver(false);
+		
+	}
+	else if (ATower* DestroyedTower = Cast<ATower>(ActorThatDied)) // Tower
+	{
+		DestroyedTower->HandleDestruction();
+		TowersLeft--;
+		if (TowersLeft == 0)
+		{
+			// Call End Game Blueprint Event
+			GameOver(true);
+		}
+	}
+	else if (AEnemyCharacterTank* DestroyedEnemy = Cast<AEnemyCharacterTank>(ActorThatDied)) // Enemy Tank
+	{
+		DestroyedEnemy->HandleDestruction();
+	}
 }

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+// Forward Includes
 class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
@@ -18,32 +19,29 @@ class BATTLETANKS_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AProjectile();
+
+	virtual void Tick(float DeltaTime) override;
+
+	USoundBase* GetLaunchSound();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	USoundBase* GetLaunchSound();
-
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Combat")
-	float Damage = 20.f;
+	float Damage = 100.f;
 
+	// Bluepirnt Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Components")
 	UStaticMeshComponent* ProjectileMeshComponent;
-
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
-
 	UPROPERTY(VisibleAnywhere, Category = "Combat")
 	UParticleSystemComponent* SmokeTrailComponent;
 
+	// Called when Projectile hits something
 	UFUNCTION()
 	void OnHit(
 		UPrimitiveComponent* HitComp,	// The component doing the hitting - Projectile Mesh
@@ -53,15 +51,13 @@ private:
 		const FHitResult& Hit			// More info about the Hit
 	);  
 
+	// Sound & Visual Effects
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UParticleSystem* HitParticles;
-
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	USoundBase* LaunchSound;
-
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	USoundBase* HitSound;
-
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<UCameraShakeBase> HitCameraShake;
 };

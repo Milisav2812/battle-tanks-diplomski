@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "BasePawn.generated.h"
 
+// Forward Includes
 class UCapsuleComponent;
 class AProjectile;
 class UParticleSystem;
@@ -18,21 +19,21 @@ class BATTLETANKS_API ABasePawn : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
+	// Constructor
 	ABasePawn();
 
 	void HandleDestruction();
 
+	// Getters
 	USceneComponent* GetProjectileSpawnPoint();
 	UStaticMeshComponent* GetBaseMesh();
 
-
 protected:
 	void RotateTurret(FVector LookAtLocation);
-
 	void Fire();
 
 private:
+	// Parts of the Tank
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Main Components")
 	UCapsuleComponent* CapsuleComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Main Components")
@@ -42,15 +43,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Main Components")
 	USceneComponent* ProjectileSpawnPoint;
 
+	// Tank Projectile
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
 	TSubclassOf<AProjectile> ProjectileClass;
 
+	// Sound & Visual Effects
 	UPROPERTY(EditAnywhere, Category = "Death")
 	UParticleSystem* DeathParticles;
-
 	UPROPERTY(EditAnywhere, Category = "Death")
 	USoundBase* DestroySound;
-
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<UCameraShakeBase> PawnDeathCameraShake;
 

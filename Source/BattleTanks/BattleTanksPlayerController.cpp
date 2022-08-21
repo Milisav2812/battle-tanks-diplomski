@@ -5,7 +5,6 @@
 
 void ABattleTanksPlayerController::SetPlayerEnabledState(bool bPlayerEnabled)
 {
-
 	if (bPlayerEnabled)
 	{
 		GetPawn()->EnableInput(this);
@@ -17,5 +16,4 @@ void ABattleTanksPlayerController::SetPlayerEnabledState(bool bPlayerEnabled)
 
 	// Show/Hide mouse cursor
 	bShowMouseCursor = bPlayerEnabled;
-
 }

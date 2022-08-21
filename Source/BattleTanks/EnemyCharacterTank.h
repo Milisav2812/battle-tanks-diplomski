@@ -6,12 +6,14 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacterTank.generated.h"
 
+// Forward Includes 
 class UCapsuleComponent;
 class AProjectile;
 class UParticleSystem;
 class USoundBase;
 class UCameraShakeBase;
 class ATank;
+class UMovementComponent;
 
 UCLASS()
 class BATTLETANKS_API AEnemyCharacterTank : public ACharacter
@@ -19,7 +21,6 @@ class BATTLETANKS_API AEnemyCharacterTank : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemyCharacterTank();
 
 	void HandleDestruction();
@@ -29,7 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	void RotateTurret(FVector LookAtLocation);
-
 	void Fire();
 
 public:	
@@ -38,23 +38,25 @@ public:
 
 private:
 
+	// Enemy Tank Parts
 	UStaticMeshComponent* BaseMesh;
 	UStaticMeshComponent* TurretMesh;
 	USceneComponent* ProjectileSpawnPoint;
+	UMovementComponent* MovementComponent;
 
+	// Tank Projectile
 	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-		TSubclassOf<AProjectile> ProjectileClass;
+	TSubclassOf<AProjectile> ProjectileClass;
 
+	// Sound & Visual Effects
 	UPROPERTY(EditAnywhere, Category = "Death")
-		UParticleSystem* DeathParticles;
-
+	UParticleSystem* DeathParticles;
 	UPROPERTY(EditAnywhere, Category = "Death")
-		USoundBase* DestroySound;
-
+	USoundBase* DestroySound;
 	UPROPERTY(EditAnywhere, Category = "Combat")
-		TSubclassOf<UCameraShakeBase> PawnDeathCameraShake;
+	TSubclassOf<UCameraShakeBase> PawnDeathCameraShake;
 
-	// ID of the enemy tank
+	// ID of the enemy tank - Used for Patrol Logic
 	UPROPERTY(EditInstanceOnly, Category = "Patrol ID", meta = (AllowPrivateAccess = "true"), BlueprintReadOnly)
 	int32 EnemyTankID;
 
@@ -63,6 +65,7 @@ private:
 	float FireDistance = 1000;
 	float CheckIfWithinRange();
 
+	// Player Tank Reference
 	ATank* PlayerTank;
 
 	// Timer and Fire functionality

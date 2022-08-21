@@ -1,19 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BasePawn.h"
+
 #include "Projectile.h"
+
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
-#include "DrawDebugHelpers.h"
 #include "Camera/CameraShakeBase.h"
 
-// Sets default values
 ABasePawn::ABasePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Create capsule collision
 	CapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Collider"));
 	RootComponent = CapsuleComp;
 	
@@ -33,15 +31,12 @@ ABasePawn::ABasePawn()
 
 void ABasePawn::RotateTurret(FVector LookAtLocation) 
 {
-
-	// Vector that has a starting position in the tank turret and an end position at our mouse cursor
 	FVector TargetVector = LookAtLocation - TurretMesh->GetComponentLocation();
 
-	// Turret will only rotate in Yaw 
+	// Turret will only rotate in Yaw(Z Axis)
 	FRotator TargetRotation = FRotator(0, TargetVector.Rotation().Yaw, 0);
 
 	TurretMesh->SetWorldRotation(TargetRotation);
-
 }
 
 void ABasePawn::Fire()
@@ -53,9 +48,10 @@ void ABasePawn::Fire()
 		ProjectileSpawnPoint->GetComponentRotation()
 		);
 
+	// Important to have when destroying the Projectile
 	SpawnedProjectile->SetOwner(this);
 
-	if (SpawnedProjectile->GetLaunchSound())
+	if (ensure(SpawnedProjectile->GetLaunchSound()))
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,
@@ -63,29 +59,12 @@ void ABasePawn::Fire()
 			SpawnedProjectile->GetActorLocation()
 		);
 	}
-	
-
-
-
-	// Draw Debug Sphere
-	/*DrawDebugSphere(
-		GetWorld(),
-		ProjectileSpawnPoint->GetComponentLocation(),
-		20,
-		12,
-		FColor::Red,
-		false,
-		3.f
-	);*/
-
 }
 
 void ABasePawn::HandleDestruction()
 {
-	// Visual / Sound Effects go here
-	
-	// Spawn Death Particles
-	if (DeathParticles)
+	// Destroy Visual Effects
+	if (ensure(DeathParticles))
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
@@ -94,16 +73,18 @@ void ABasePawn::HandleDestruction()
 		);
 	}
 
-	if (PawnDeathCameraShake)
+	// Camera Shake Effect
+	if (ensure(PawnDeathCameraShake))
 	{
 		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-		if (PlayerController)
+		if (ensure(PlayerController))
 		{
 			PlayerController->ClientStartCameraShake(PawnDeathCameraShake);
 		}
 	}
 
-	if (DestroySound)
+	// Destroy Sounds
+	if (ensure(DestroySound))
 	{
 		UGameplayStatics::PlaySoundAtLocation(
 			this,

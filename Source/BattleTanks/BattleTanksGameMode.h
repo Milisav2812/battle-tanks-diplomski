@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "BattleTanksGameMode.generated.h"
 
+// Forward Includes
 class ATank;
 class ABattleTanksPlayerController;
 
@@ -15,36 +16,33 @@ class BATTLETANKS_API ABattleTanksGameMode : public AGameModeBase
 	GENERATED_BODY() 
 
 public:
+	// Called when an Actor gets Destroyed
 	void ActorDied(AActor* ActorThatDied);
-
-	ATank* getPlayerTank();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Blueprint Callable Events
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartGame();
-
 	UFUNCTION(BlueprintImplementableEvent)
 	void GameOver(bool bGameWon);
 
-	
-
 private:
+	// Player Tank Reference
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	ATank* PlayerTank;
 
+	// Player Controller Reference
 	ABattleTanksPlayerController* PlayerController;
 
+	// Properties for Game Rules
 	UPROPERTY(EditAnywhere, Category = "Gameplay Options")
 	float TimeBeforeStart = 3.f;
-
-	void HandleStartGame();
-
-	int32 CalculateNumberOfTowers();
-
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	int32 TowersLeft = 0;
 
+	void HandleStartGame();
+	int32 CalculateNumberOfTowers();
 };

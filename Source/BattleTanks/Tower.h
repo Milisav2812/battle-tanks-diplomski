@@ -6,6 +6,7 @@
 #include "BasePawn.h"
 #include "Tower.generated.h"
 
+// Forward Includes
 class ATank;
 class ABattleTanksGameMode;
 
@@ -26,7 +27,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Fire")
-	float FireDistance = 1000;
+	float FireDistance = 700;
 
 	float CheckIfWithinRange();
 
