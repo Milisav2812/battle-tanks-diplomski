@@ -55,7 +55,7 @@ void ATower::CheckIfFireConditionIsMet()
 		GetOwner() // The Actor that the Ray-Cast will ignore
 	);
 
-	bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
+	GetWorld()->LineTraceSingleByObjectType(
 		HitResult,
 		GetProjectileSpawnPoint()->GetComponentLocation(),
 		GetProjectileSpawnPoint()->GetComponentLocation() + GetProjectileSpawnPoint()->GetComponentRotation().Vector() * FireDistance,

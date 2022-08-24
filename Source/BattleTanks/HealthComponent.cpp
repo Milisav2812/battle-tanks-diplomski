@@ -47,6 +47,5 @@ void UHealthComponent::DamageTaken(
 			BattleTanksGameMode->ActorDied(DamagedActor);
 		}
 	}
-
 }
 

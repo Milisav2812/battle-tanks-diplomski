@@ -29,15 +29,15 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		float CurrentHealth = 0.f;
 
-	// Called when Event ApplyDamage ticks (ApplyDamage is called by Projectile when it hits something)
-	UFUNCTION()
-	void DamageTaken(
-		AActor* DamagedActor,			// The Actor taking the damage
-		float Damage,					// The Damage amount
-		const UDamageType* DamageType,	// Do something based on the kind of damage(fire, poison, etc.)
-		AController* Instagator,		// The controller responsible for the damage
-		AActor* DamageCauser			// Actor causing the damage
-	);
+// Called when Event ApplyDamage ticks (ApplyDamage is called by Projectile when it hits something)
+UFUNCTION()
+void DamageTaken(
+	AActor* DamagedActor,			// The Actor taking the damage
+	float Damage,					// The Damage amount
+	const UDamageType* DamageType,	// Do something based on the kind of damage(fire, poison, etc.)
+	AController* Instagator,		// The controller responsible for the damage
+	AActor* DamageCauser			// Actor causing the damage
+);
 
 	ABattleTanksGameMode* BattleTanksGameMode;
 }; 
